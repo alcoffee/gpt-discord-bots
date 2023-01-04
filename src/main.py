@@ -22,7 +22,7 @@ def davinciStrictive(prompt):
         prompt = prompt.replace("\n", " "),
         engine = model_name,
         max_tokens = 2048,
-        temperature = 0.12,
+        temperature = 1.00,
         n = 1, stop = None
     )
     text = completions.choices[0].text
