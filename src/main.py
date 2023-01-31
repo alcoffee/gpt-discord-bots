@@ -68,7 +68,7 @@ class SessionManager:
 
     def get_pair_list(self, channel_id):
         # channel_idを指定して、promptとcompletionを古い順に取得する
-        record_list = self.session.query(Session).filter_by(channel_id=channel_id).order_by(Session.created_at.asc()).all()
+        record_list = self.session.query(Session).filter_by(channel_id=channel_id).order_by(Session.created_at.desc()).limit(10).all() 
         # promptとcompletionのペアの配列を取得する
         pair_list = [(record.prompt, record.completion) for record in record_list]
         return pair_list
