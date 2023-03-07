@@ -14,7 +14,7 @@ client = discord.Client(intents=intents)
 
 load_dotenv()
 openai.api_key=os.environ.get("OPENAI_API_KEY")
-model_name = "text-davinci-003"
+model_name = "gpt-3.5-turbo"
 
 ### パラメータを指定して使いまわす関数を定義
 def davinciStrictive(prompt):
@@ -26,6 +26,23 @@ def davinciStrictive(prompt):
         n = 1, stop = None
     )
     text = completions.choices[0].text
+    return text
+    
+def davinci(msg_history, prompt):
+    msg = []
+    system_msg = {"role": "system", "content": "あなたは「ずんだもん」という男の子で、森の妖精です。語尾に「〜のだ」、「〜なのだ」などとつけます。"}
+    msg.append(system_msg)
+    msg += msg_history
+    new_msg = {"role": "user", "content": prompt}
+    msg.append(new_msg)
+    
+    res = openai.ChatCompletion.create(
+        model=model_name,
+        messages = msg,
+        temperature=1.35  # 温度（0-2, デフォルト1）
+    )
+
+    text = res["choices"][0]["message"]["content"]
     return text
 
 # エンジンの定義
@@ -95,13 +112,11 @@ async def on_message(message):
     # General以外には全てに常駐
     if message.channel.name != "一般":
         input_prompt = message.content.strip()
-        template = ""
+        msg_history = []
         for prompt, completion in sm.get_pair_list(message.channel.id):
-            template += "User:"+prompt + "\n"
-            template += "Assistant:"+completion + "\n"
-        prompt = template + "User: " + input_prompt + "\n" + "Assistant: "
-        print(prompt)
-        completion = davinciStrictive(prompt)
+             msg_history.append({"role":"user", "content": prompt})
+             msg_history.append({"role":"assistant", "content": completion})
+        completion = davinci(msg_history, input_prompt)
         sm.add_record(input_prompt, completion, message.channel.id)
         await message.channel.send(completion)
 
