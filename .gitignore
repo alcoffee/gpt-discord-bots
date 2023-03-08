@@ -1,3 +1,4 @@
 .env
 database.db
 ./backup/*
+__pycache__
