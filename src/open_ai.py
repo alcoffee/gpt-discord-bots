@@ -32,5 +32,20 @@ def zunda(msg_history, prompt):
         temperature=1.35  # 温度（0-2, デフォルト1）
     )
 
+
+def gptTurbo(system_prompt, msg_history, prompt):
+    msg = []
+    system_msg = {"role": "system", "content": system_prompt}
+    msg.append(system_msg)
+    msg += msg_history
+    new_msg = {"role": "user", "content": prompt}
+    msg.append(new_msg)
+
+    res = openai.ChatCompletion.create(
+        model=model_name,
+        messages = msg,
+        temperature=1.35  # 温度（0-2, デフォルト1）
+    )
+
     text = res["choices"][0]["message"]["content"]
     return text

@@ -17,6 +17,16 @@ class Session(Base):
     channel_id = sqlalchemy.Column(sqlalchemy.String(100))
     created_at = sqlalchemy.Column(sqlalchemy.DateTime)
 
+# # for thread
+# class Thread(Base):
+#     id = sqlalchemy.Column(
+#         sqlalchemy.Integer, primary_key=True, autoincrement=True
+#     )
+#     prompt = sqlalchemy.Column(sqlalchemy.String(500)
+#     completion = sqlalchemy.Column(sqlalchemy.String(500))
+#     thread_id = sqlalchemy.Column(sqlalchemy.String(100))
+#     created_at = sqlalchemy.Column(sqlalchemy.DateTime))
+
 Base.metadata.create_all(engine) # データベースにテーブルを作成
 SessionDataBase = sqlalchemy.orm.sessionmaker(bind=engine) # データベースに接続するためのセッションを準備
 
