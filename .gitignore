@@ -2,7 +2,4 @@
 database.db
 ./backup/*
 __pycache__
-<<<<<<< Updated upstream
-=======
 .src/test.log
->>>>>>> Stashed changes
