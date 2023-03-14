@@ -1,16 +1,23 @@
 import openai
 from dotenv import load_dotenv
-import os
+import os, logging, sys
 
 load_dotenv()
 openai.api_key=os.environ.get("OPENAI_API_KEY")
-model_name = "gpt-3.5-turbo"
+
+# ログの設定
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('../logs/openai.log'),
+    ])
 
 ### パラメータを指定して使いまわす関数を定義
 def davinciStrictive(prompt):
     completions = openai.Completion.create(
         prompt = prompt.replace("\n", " "),
-        engine = model_name,
+        engine = "davinci-003",
         max_tokens = 2048,
         temperature = 1.00,
         n = 1, stop = None
@@ -27,25 +34,27 @@ def zunda(msg_history, prompt):
     msg.append(new_msg)
     
     res = openai.ChatCompletion.create(
-        model=model_name,
+        model="gpt-3.5-turbo",
         messages = msg,
         temperature=1.35  # 温度（0-2, デフォルト1）
     )
 
 
-def gptTurbo(system_prompt, msg_history, prompt):
+async def gptTurbo(system_prompt, msg_history, input_prompt):
     msg = []
     system_msg = {"role": "system", "content": system_prompt}
     msg.append(system_msg)
     msg += msg_history
-    new_msg = {"role": "user", "content": prompt}
+    new_msg = {"role": "user", "content": input_prompt}
     msg.append(new_msg)
 
-    res = openai.ChatCompletion.create(
-        model=model_name,
+    res = await openai.ChatCompletion.acreate(
+        model="gpt-3.5-turbo",
         messages = msg,
-        temperature=1.35  # 温度（0-2, デフォルト1）
+        temperature=0.85  # 温度（0-2, デフォルト1）
     )
 
+    logging.info(str(res["usage"]).strip("\n"))
+    # logging.info(str(res["choices"]["stop"]))
     text = res["choices"][0]["message"]["content"]
     return text

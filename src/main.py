@@ -11,7 +11,7 @@ logging.basicConfig(
     level=logging.INFO,
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler('test.log'),
+        logging.FileHandler('../logs/discord.log'),
     ])
 
 # インテンツ？
@@ -30,7 +30,7 @@ async def on_message(message):
         return
 
     # AI専用のチャンネル
-    if message.channel.name == "chatgpt-clone":
+    if message.channel.name == "chatgpt-threads":
         if message.channel.type == discord.ChannelType.text:
             thread = await message.create_thread(
                 name=message.content,
@@ -41,13 +41,11 @@ async def on_message(message):
         input_prompt = message.content.strip()
         system_prompt = message.channel.name
         msg_history = []
-        logging.info(input_prompt)
-        logging.info(system_prompt)
         for prompt, completion in sm.get_pair_list(message.channel.id):
             msg_history.append({"role":"user", "content": prompt})
             msg_history.append({"role":"assistant", "content": completion})
-        completion = open_ai.gptTurbo(system_prompt, msg_history, input_prompt)
-        logging.info(completion)
+        async with message.channel.typing():
+            completion = await open_ai.gptTurbo(system_prompt, msg_history, input_prompt)
         sm.add_record(input_prompt, completion, message.channel.id)
         await message.channel.send(completion)
 

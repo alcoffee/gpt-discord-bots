@@ -2,4 +2,4 @@
 database.db
 ./backup/*
 __pycache__
-.src/test.log
+logs/
